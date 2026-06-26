@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fitness &amp; Health Dashboard</title>
+<style>
+  :root {
+    --bg: #F1F1ED;
+    --card: #FFFFFF;
+    --ink: #1B2420;
+    --ink-dim: #6B7570;
+    --border: #E6E5DF;
+    --green: #1F4D3C;
+    --green-dark: #0F2E22;
+    --bright-green: #2ECC71;
+    --green-soft: #E4EEE8;
+    --amber: #E8A33D;
+    --clay: #D9714E;
+    --blue: #5C7C99;
+    --red: #D85C4C;
+    --walk: #7A9471;
+    --cycle: #8A6FB0;
+    --radius: 18px;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+  }
+
+  .shell {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 18px 22px 60px;
+  }
+
+  /* ---------- Top nav ---------- */
+
+  .topnav {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: var(--card);
+    border-radius: 999px;
+    padding: 10px 18px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    border: 2px solid var(--bright-green);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    color: var(--green);
+    font-size: 18px;
+    margin-right: 6px;
+  }
+  .brand svg { width: 22px; height: 22px; }
+
+  .navtagline {
+    flex: 1;
+    text-align: center;
+    font-size: 18px;
+    font-style: italic;
+    font-weight: 700;
+    color: var(--green-dark);
+    padding: 0 16px;
+    letter-spacing: 0.01em;
+  }
+
+  .navsearch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border-radius: 999px;
+    padding: 8px 16px;
+    color: var(--ink-dim);
+    font-size: 13px;
+    min-width: 160px;
+  }
+
+  .navprofile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .navprofile-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px;
+  }
+  .navprofile-text { font-size: 12px; line-height: 1.3; }
+  .navprofile-text .name { font-weight: 700; }
+  .navprofile-text .role { color: var(--ink-dim); }
+
+  @media (max-width: 900px) {
+    .navtagline { display: none; }
+  }
+
+  /* ---------- Greeting bar ---------- */
+
+  .greeting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .greeting-left h1 {
+    font-size: 26px;
+    margin: 0 0 2px 0;
+    font-weight: 800;
+  }
+  .greeting-left p {
+    margin: 0;
+    color: var(--ink-dim);
+    font-size: 14px;
+  }
+
+  .greeting-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .date-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card);
+    border-radius: 999px;
+    padding: 8px 16px;
+  }
+  .date-pill .daynum {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+  .date-pill .daytext { font-size: 12px; color: var(--ink-dim); line-height: 1.3; }
+  .date-pill .daytext b { color: var(--ink); display: block; font-size: 13px; }
+
+  .show-trace-btn {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 12px 24px;
+    font-weight: 700;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .show-trace-btn:hover { background: #16382b; }
+
+  /* ---------- Grid ---------- */
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1.3fr 1.3fr 1.1fr;
+    grid-template-rows: auto auto;
+    gap: 18px;
+    align-items: stretch;
+  }
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .grid .card[style*="grid-row"] { grid-row: auto; grid-column: span 2; }
+  }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .grid .card[style*="grid-row"] { grid-column: span 1; }
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px;
+    border: 2px solid var(--bright-green);
+  }
+
+  .card-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-dim);
+    margin: 0 0 14px 0;
+  }
+
+  /* ---------- Col 1: AI Summary / macros ---------- */
+
+  .macro-summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .macro-side { text-align: center; font-size: 11px; color: var(--ink-dim); }
+  .macro-side b { display: block; font-size: 14px; color: var(--ink); font-weight: 700; }
+
+  .calorie-ring {
+    width: 96px; height: 96px;
+    position: relative;
+  }
+  .calorie-ring svg { transform: rotate(-90deg); }
+  .calorie-ring-text {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .calorie-ring-text .num { font-size: 19px; font-weight: 800; display: block; }
+  .calorie-ring-text .lbl { font-size: 9px; color: var(--ink-dim); }
+
+  .macro-bars { display: flex; flex-direction: column; gap: 10px; }
+  .macro-bar-row { display: flex; align-items: center; gap: 8px; font-size: 11.5px; }
+  .macro-bar-row .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .macro-bar-track {
+    flex: 1; height: 5px; border-radius: 4px; background: var(--bg); overflow: hidden;
+  }
+  .macro-bar-fill { height: 100%; border-radius: 4px; }
+  .macro-bar-label { width: 50px; color: var(--ink-dim); flex-shrink: 0; }
+  .macro-bar-val { width: 56px; text-align: right; font-weight: 700; flex-shrink: 0; }
+
+  .macro-note {
+    font-size: 11.5px;
+    color: var(--ink-dim);
+    margin-top: 14px;
+    line-height: 1.5;
+  }
+
+  /* weight quick-entry inside col 1 */
+  .quick-log {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .quick-log-title { font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+  .quick-log-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .quick-log-field { display: flex; flex-direction: column; gap: 4px; }
+  .quick-log-field label { font-size: 10px; color: var(--ink-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+  .quick-log-field input {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 7px 9px;
+    font-size: 13px;
+    font-family: var(--font-body);
+    width: 100%;
+    color: var(--ink);
+  }
+  .quick-log-field input:focus { outline: 2px solid var(--green); outline-offset: 1px; }
+  .quick-log-date {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 6px 9px;
+    font-size: 12px;
+    margin-bottom: 8px;
+    font-family: var(--font-body);
+    color: var(--ink);
+  }
+  .quick-log-save {
+    width: 100%;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 9px;
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+  .quick-log-save:hover { background: #16382b; }
+  .quick-log-msg { font-size: 11px; color: var(--green); margin-top: 6px; min-height: 14px; text-align: center; }
+
+  .meal-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+    font-size: 10px;
+    color: var(--ink-dim);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .meal-select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 7px 9px;
+    font-size: 13px;
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: var(--card);
+    text-transform: none;
+    font-weight: 400;
+  }
+  .meal-select:focus { outline: 2px solid var(--green); outline-offset: 1px; }
+
+  .quick-log-hint {
+    font-size: 10.5px;
+    color: var(--ink-dim);
+    line-height: 1.4;
+    margin: 0 0 10px 0;
+  }
+
+  .meal-breakdown {
+    margin-bottom: 10px;
+  }
+  .meal-breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink-dim);
+  }
+  .meal-breakdown-row:last-child { border-bottom: none; }
+  .meal-breakdown-row .meal-name { color: var(--ink); font-weight: 600; text-transform: capitalize; }
+  .meal-breakdown-empty {
+    font-size: 11px;
+    color: var(--ink-dim);
+    font-style: italic;
+    padding: 4px 0;
+  }
+
+  /* ---------- Col 2: streak / weight chart / schedule ---------- */
+
+  .streak-card { text-align: center; }
+  .streak-flame {
+    width: 70px; height: 84px;
+    margin: 0 auto 8px;
+    position: relative;
+  }
+  .streak-flame .num {
+    position: absolute; top: 52%; left: 50%; transform: translate(-50%, -50%);
+    color: #fff; font-weight: 800; font-size: 22px;
+  }
+  .streak-sub { font-size: 13px; color: var(--ink-dim); margin: 0 0 16px 0; }
+
+  .week-dots {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .week-dot-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .week-dot-col .dow { font-size: 10px; color: var(--ink-dim); font-weight: 600; }
+  .week-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+  .week-dot.done { background: var(--green); color: #fff; }
+  .week-dot.missed { background: #FBE4E0; color: var(--red); }
+  .week-dot.future { background: var(--bg); color: var(--ink-dim); }
+
+  .streak-stat { font-size: 30px; font-weight: 800; margin: 4px 0 0 0; }
+  .streak-stat-label { font-size: 12px; color: var(--ink-dim); margin: 0 0 4px 0; font-weight: 700; }
+
+  .protein-summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .protein-stat { text-align: center; }
+  .protein-stat-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-dim); font-weight: 700; display: block; margin-bottom: 2px; }
+  .protein-stat-value { font-size: 18px; font-weight: 800; color: var(--clay); }
+
+  .protein-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 70px;
+    margin-bottom: 10px;
+  }
+  .protein-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 4px; }
+  .protein-bar { width: 100%; background: var(--clay); border-radius: 4px 4px 0 0; min-height: 2px; }
+  .protein-bar-dow { font-size: 9px; color: var(--ink-dim); font-weight: 600; }
+
+  /* ---------- All-time step record ---------- */
+
+  .step-record-card { text-align: center; }
+  .step-record-photo {
+    width: 100%;
+    height: 90px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    background: var(--green-soft);
+  }
+  .step-record-photo img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .step-record-value { font-size: 30px; font-weight: 800; margin: 0; line-height: 1; }
+  .step-record-date { font-size: 12px; color: var(--ink-dim); margin: 4px 0 0 0; }
+
+  /* featured workout image card */
+  .feature-card {
+    border-radius: var(--radius);
+    overflow: hidden;
+    position: relative;
+    min-height: 220px;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    color: #fff;
+  }
+  .feature-card img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.3) brightness(0.7);
+  }
+  .feature-card .overlay {
+    position: relative;
+    z-index: 1;
+    padding: 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.75), transparent 70%);
+  }
+  .feature-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(4px);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 60px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .feature-title { font-size: 19px; font-weight: 800; margin: 0 0 8px 0; }
+  .feature-meta { display: flex; gap: 14px; font-size: 11.5px; opacity: 0.9; }
+
+  /* schedule list */
+  .schedule-list { display: flex; flex-direction: column; }
+  .schedule-row {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .schedule-row:last-child { border-bottom: none; }
+  .schedule-time { width: 44px; font-size: 11px; color: var(--ink-dim); font-weight: 700; flex-shrink: 0; padding-top: 2px; }
+  .schedule-thumb {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--green-soft);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: var(--green);
+  }
+  .schedule-info { flex: 1; min-width: 0; }
+  .schedule-info .t { font-size: 13px; font-weight: 700; margin: 0; }
+  .schedule-info .s { font-size: 11px; color: var(--ink-dim); margin: 2px 0 0 0; }
+  .schedule-empty { font-size: 12px; color: var(--ink-dim); font-style: italic; padding: 10px 0; }
+
+  /* ---------- Col 3: nutrition score / weight chart / goal ---------- */
+
+  .score-row { text-align: center; margin-bottom: 4px; }
+  .score-icon { color: var(--ink-dim); margin-bottom: 6px; }
+  .score-num { font-size: 38px; font-weight: 800; margin: 0; line-height: 1; }
+  .score-sub { font-size: 12px; color: var(--ink-dim); margin: 4px 0 16px 0; }
+
+  .range-toggle {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .range-btn {
+    background: var(--bg);
+    border: none;
+    color: var(--ink-dim);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 5px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 700;
+  }
+  .range-btn.active { background: var(--green); color: #fff; }
+
+  .weight-chart-svg { width: 100%; height: 180px; display: block; }
+
+  .weight-stats-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .weight-stat { text-align: center; }
+  .weight-stat-label { font-size: 9.5px; text-transform: uppercase; color: var(--ink-dim); font-weight: 700; letter-spacing: 0.03em; display: block; margin-bottom: 2px; }
+  .weight-stat-value { font-size: 15px; font-weight: 800; }
+
+  .log-btn {
+    width: 100%;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 12px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 14px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .log-btn:hover { background: #16382b; }
+
+  /* nutrition goal card */
+  .goal-cal { font-size: 22px; font-weight: 800; margin: 4px 0; }
+
+  .goal-target-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .goal-target-btn {
+    background: var(--bg);
+    border: none;
+    color: var(--ink-dim);
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 6px 13px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .goal-target-btn.active { background: var(--green); color: #fff; }
+
+  .goal-sub { font-size: 11.5px; color: var(--ink-dim); margin: 0 0 14px 0; }
+  .goal-progress-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-dim); margin-bottom: 6px; font-weight: 600; }
+  .goal-progress-track { height: 8px; background: var(--bg); border-radius: 6px; overflow: hidden; margin-bottom: 16px; }
+  .goal-progress-fill { height: 100%; background: var(--green); border-radius: 6px; }
+
+  .day-check-row { display: flex; justify-content: space-between; }
+  .day-check-col { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .day-check-col .dow { font-size: 9.5px; color: var(--ink-dim); font-weight: 600; }
+  .day-check {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    border: 1.5px solid var(--border);
+  }
+  .day-check.good { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+  .day-check.over { background: #FBE4E0; border-color: var(--red); color: var(--red); }
+  .day-check.empty { color: var(--border); }
+
+  /* ---------- Bottom: full history table ---------- */
+
+  .history-section { margin-top: 22px; }
+  table.history { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.history th, table.history td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--border); }
+  table.history th { color: var(--ink-dim); font-weight: 700; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.03em; }
+  table.history tr:last-child td { border-bottom: none; }
+  .row-del-btn { background: none; border: none; color: var(--ink-dim); cursor: pointer; font-size: 11.5px; text-decoration: underline; font-family: var(--font-body); }
+  .row-del-btn:hover { color: var(--red); }
+
+  .empty-note { font-size: 12.5px; color: var(--ink-dim); font-style: italic; padding: 12px 0; }
+
+  .entry-count-note { text-align: center; font-size: 11.5px; color: var(--ink-dim); margin-top: 26px; }
+
+  .backup-card { margin-top: 18px; }
+  .backup-note { font-size: 12px; color: var(--ink-dim); line-height: 1.6; margin: 0 0 14px 0; max-width: 640px; }
+  .backup-btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .backup-btn {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 11px 22px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .backup-btn:hover { background: #16382b; }
+  .backup-btn.secondary {
+    background: var(--bg);
+    color: var(--ink);
+    border: 1.5px solid var(--border);
+  }
+  .backup-btn.secondary:hover { background: var(--green-soft); border-color: var(--green); }
+  .backup-msg { font-size: 12px; color: var(--green); margin: 10px 0 0 0; min-height: 16px; }
+  .backup-msg.error { color: var(--red); }
+
+  @media (max-width: 640px) {
+    .greeting-row { flex-direction: column; align-items: flex-start; }
+  }
+  /* ---------- Workout cards row ---------- */
+
+  .workouts-section { margin-bottom: 18px; }
+  .workouts-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    align-items: stretch;
+  }
+  @media (max-width: 1100px) {
+    .workouts-row { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .workouts-row { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .workout-card {
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--card);
+    border: 2px solid var(--bright-green);
+    display: flex;
+    flex-direction: column;
+  }
+  .workout-card-photo {
+    position: relative;
+    width: 100%;
+    height: 110px;
+    background: var(--green-soft);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .workout-card-photo img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .workout-card-body {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .workout-name { font-size: 14px; font-weight: 800; margin: 0 0 3px 0; color: var(--ink); }
+  .workout-sub { font-size: 10.5px; color: var(--ink-dim); margin: 0 0 10px 0; line-height: 1.4; flex: 1; }
+  .workout-done-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 999px;
+    padding: 8px 10px;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font-body);
+    flex-shrink: 0;
+  }
+  .workout-done-btn:hover { background: var(--green-soft); }
+  .workout-done-btn.done {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .workout-done-date {
+    font-size: 10px;
+    opacity: 0.8;
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  /* ---------- Calendar (replaces community) ---------- */
+
+  .cal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .cal-month-label { font-size: 13px; font-weight: 700; }
+  .cal-nav-btn {
+    background: var(--bg);
+    border: none;
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--ink-dim);
+    font-size: 13px;
+  }
+  .cal-nav-btn:hover { background: var(--green-soft); color: var(--green); }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .cal-dow {
+    text-align: center;
+    font-size: 9.5px;
+    color: var(--ink-dim);
+    font-weight: 700;
+    padding-bottom: 4px;
+  }
+  .cal-cell {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    position: relative;
+    background: var(--bg);
+    color: var(--ink-dim);
+  }
+  .cal-cell.empty { background: transparent; }
+  .cal-cell.today { box-shadow: inset 0 0 0 1.5px var(--ink); }
+  .cal-cell .daynum-sm { font-weight: 600; }
+  .cal-dots { display: flex; gap: 2px; margin-top: 2px; }
+  .cal-dot { width: 4.5px; height: 4.5px; border-radius: 50%; }
+
+  .cal-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 10.5px;
+    color: var(--ink-dim);
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+  }
+  .cal-legend-item { display: flex; align-items: center; gap: 5px; }
+  .cal-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Top nav -->
+  <div class="topnav">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Vitals
+    </div>
+    <div class="navtagline">health isn't about the weight you lose, but the life you gain</div>
+    <div class="navsearch">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      Search here
+    </div>
+    <div class="navprofile">
+      <div class="navprofile-avatar">YOU</div>
+      <div class="navprofile-text">
+        <div class="name">Your Log</div>
+        <div class="role">Self-tracked</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Greeting row -->
+  <div class="greeting-row">
+    <div class="greeting-left">
+      <h1>Hey, Allan, ready to log today?</h1>
+      <p id="greetingSub">Track your weight, calories, protein, and steps below.</p>
+    </div>
+    <div class="greeting-right">
+      <div class="date-pill">
+        <div class="daynum" id="navDayNum">24</div>
+        <div class="daytext"><span id="navDow">Wed,</span><b id="navMonth">June</b></div>
+      </div>
+      <button class="show-trace-btn" id="scrollToLogBtn">Log today</button>
+    </div>
+  </div>
+
+  <!-- Workout cards -->
+  <div class="workouts-section">
+    <p class="card-label" style="margin-bottom:10px;">Your Workouts</p>
+    <div class="workouts-row" id="workoutsRow"></div>
+  </div>
+
+  <!-- Main grid -->
+  <div class="grid">
+
+    <!-- COLUMN 1: AI summary / macros + quick log (spans both rows) -->
+    <div class="card" style="grid-row: span 2;">
+      <p class="card-label">Today's Summary</p>
+      <div class="macro-summary-row">
+        <div class="macro-side"><b id="sumConsumed">0</b>consumed</div>
+        <div class="calorie-ring">
+          <svg width="96" height="96" viewBox="0 0 96 96">
+            <circle cx="48" cy="48" r="40" fill="none" stroke="#EFEFE9" stroke-width="10" />
+            <circle id="calRingArc" cx="48" cy="48" r="40" fill="none" stroke="#1F4D3C" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 251" />
+          </svg>
+          <div class="calorie-ring-text">
+            <span class="num" id="sumNet">0</span>
+            <span class="lbl">net kcal</span>
+          </div>
+        </div>
+        <div class="macro-side"><b id="sumTarget">2000</b>target</div>
+      </div>
+      <div class="macro-bars">
+        <div class="macro-bar-row">
+          <span class="dot" style="background:var(--clay)"></span>
+          <span class="macro-bar-label">Protein</span>
+          <span class="macro-bar-track"><span class="macro-bar-fill" id="barProtein" style="background:var(--clay); width:0%"></span></span>
+          <span class="macro-bar-val" id="valProtein">0g</span>
+        </div>
+        <div class="macro-bar-row">
+          <span class="dot" style="background:var(--amber)"></span>
+          <span class="macro-bar-label">Steps</span>
+          <span class="macro-bar-track"><span class="macro-bar-fill" id="barSteps" style="background:var(--amber); width:0%"></span></span>
+          <span class="macro-bar-val" id="valSteps">0</span>
+        </div>
+        <div class="macro-bar-row">
+          <span class="dot" style="background:var(--blue)"></span>
+          <span class="macro-bar-label">Weight</span>
+          <span class="macro-bar-track"><span class="macro-bar-fill" id="barWeight" style="background:var(--blue); width:0%"></span></span>
+          <span class="macro-bar-val" id="valWeight">—</span>
+        </div>
+      </div>
+      <p class="macro-note" id="aiNote">Log your first entry below to start tracking your daily summary.</p>
+
+      <div class="quick-log" id="quickLog">
+        <p class="quick-log-title">Log an entry</p>
+        <input type="date" class="quick-log-date" id="dateInput">
+        <label class="meal-label">
+          Meal
+          <select class="meal-select" id="mealSelect">
+            <option value="breakfast">Breakfast</option>
+            <option value="lunch">Lunch</option>
+            <option value="dinner">Dinner</option>
+            <option value="snack">Snack</option>
+          </select>
+        </label>
+        <div class="quick-log-grid">
+          <div class="quick-log-field">
+            <label>Weight (kg)</label>
+            <input type="number" step="0.1" inputmode="decimal" placeholder="72.4" id="input-weight">
+          </div>
+          <div class="quick-log-field">
+            <label>Calories (kcal)</label>
+            <input type="number" step="10" inputmode="decimal" placeholder="2100" id="input-calories">
+          </div>
+          <div class="quick-log-field">
+            <label>Protein (g)</label>
+            <input type="number" step="1" inputmode="decimal" placeholder="140" id="input-protein">
+          </div>
+          <div class="quick-log-field">
+            <label>Steps</label>
+            <input type="number" step="100" inputmode="decimal" placeholder="8000" id="input-steps">
+          </div>
+        </div>
+        <p class="quick-log-hint">Calories and protein are added to the day's total for the selected meal. Weight and steps overwrite the day's value.</p>
+        <div class="meal-breakdown" id="mealBreakdown"></div>
+        <button class="quick-log-save" id="saveBtn">Save entry</button>
+        <p class="quick-log-msg" id="saveMsg"></p>
+      </div>
+    </div>
+
+    <!-- ROW 1, COLUMN 2: streak -->
+    <div class="card streak-card">
+      <div class="streak-flame">
+        <svg viewBox="0 0 70 84" width="70" height="84">
+          <path d="M35 4C20 22 14 34 14 48a21 21 0 0 0 42 0c0-9-4-16-9-22 1 8-3 13-7 13-5 0-7-4-6-10-7 6-9 13-9 19" fill="#1F4D3C"/>
+        </svg>
+        <span class="num" id="streakNum">0</span>
+      </div>
+      <p class="streak-sub" id="streakSub">day streak this week!</p>
+      <div class="week-dots" id="weekDots"></div>
+      <p class="streak-stat-label">Longest Streak</p>
+      <p class="streak-stat" id="longestStreak">0</p>
+      <p class="macro-note">Streak counts consecutive days you've logged at least one metric.</p>
+    </div>
+
+    <!-- ROW 1, COLUMN 3: weight progress chart -->
+    <div class="card">
+      <p class="card-label">Weight Progress</p>
+      <div class="range-toggle" id="rangeToggle">
+        <button class="range-btn" data-range="14">14D</button>
+        <button class="range-btn" data-range="30">30D</button>
+        <button class="range-btn" data-range="90">90D</button>
+        <button class="range-btn active" data-range="all">ALL</button>
+      </div>
+      <div id="weightChartWrap"></div>
+      <div class="weight-stats-row" id="weightStatsRow"></div>
+    </div>
+
+    <!-- ROW 1, COLUMN 4: workout calendar -->
+    <div class="card">
+      <p class="card-label">Workout Calendar</p>
+      <div class="cal-head">
+        <button class="cal-nav-btn" id="calPrevBtn">‹</button>
+        <span class="cal-month-label" id="calMonthLabel">June 2026</span>
+        <button class="cal-nav-btn" id="calNextBtn">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend">
+        <div class="cal-legend-item"><span class="cal-legend-dot" style="background:var(--clay)"></span>Leg</div>
+        <div class="cal-legend-item"><span class="cal-legend-dot" style="background:var(--amber)"></span>Chest</div>
+        <div class="cal-legend-item"><span class="cal-legend-dot" style="background:var(--blue)"></span>Back</div>
+        <div class="cal-legend-item"><span class="cal-legend-dot" style="background:var(--walk)"></span>Walk</div>
+        <div class="cal-legend-item"><span class="cal-legend-dot" style="background:var(--cycle)"></span>Cycle</div>
+      </div>
+    </div>
+
+    <!-- ROW 2, COLUMN 2: protein summary -->
+    <div class="card">
+      <p class="card-label">Protein Intake</p>
+      <div class="protein-summary-row">
+        <div class="protein-stat">
+          <span class="protein-stat-label">Today</span>
+          <span class="protein-stat-value" id="proteinToday">0g</span>
+        </div>
+        <div class="protein-stat">
+          <span class="protein-stat-label">7d avg</span>
+          <span class="protein-stat-value" id="proteinAvg">0g</span>
+        </div>
+        <div class="protein-stat">
+          <span class="protein-stat-label">Goal</span>
+          <span class="protein-stat-value">100g</span>
+        </div>
+      </div>
+      <div class="protein-bars" id="proteinBars"></div>
+      <p class="macro-note" id="proteinNote">Log protein to see your weekly pattern.</p>
+    </div>
+
+    <!-- ROW 2, COLUMN 3: nutrition goal -->
+    <div class="card">
+      <p class="card-label">Nutrition Goal</p>
+      <p class="goal-cal" id="goalCalText">2,000 calorie</p>
+      <p class="goal-sub">Based on your daily logs, here's today's progress.</p>
+      <div class="goal-target-row" id="goalTargetRow">
+        <button class="goal-target-btn" data-target="1500">1,500</button>
+        <button class="goal-target-btn" data-target="1800">1,800</button>
+        <button class="goal-target-btn active" data-target="2000">2,000</button>
+        <button class="goal-target-btn" data-target="2200">2,200</button>
+      </div>
+      <div class="goal-progress-row">
+        <span>Today's progress</span>
+        <span id="goalPct">0%</span>
+      </div>
+      <div class="goal-progress-track"><div class="goal-progress-fill" id="goalFill" style="width:0%"></div></div>
+      <div class="day-check-row" id="dayCheckRow"></div>
+    </div>
+
+    <!-- ROW 2, COLUMN 4: step record -->
+    <div class="card step-record-card">
+      <p class="card-label" style="text-align:left;">All-Time Step Record</p>
+      <div class="step-record-photo">
+        <img src="https://images.unsplash.com/photo-1578269174936-2709b6aeb913?w=500&h=300&fit=crop&auto=format" alt="A gold trophy, photo by Giorgio Trovato on Unsplash" loading="lazy" onerror="this.style.display='none'">
+      </div>
+      <p class="step-record-value" id="stepRecordValue">—</p>
+      <p class="step-record-date" id="stepRecordDate">Log your steps to set a record.</p>
+    </div>
+
+  </div>
+
+  <!-- Full history -->
+  <div class="card history-section">
+    <p class="card-label">Full history</p>
+    <div id="historyTableWrap"><p class="empty-note">No entries yet.</p></div>
+  </div>
+
+  <p class="entry-count-note" id="entryCount">0 entries logged</p>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'fitnessDashboardEntries';
+  var WORKOUT_STORAGE_KEY = 'fitnessDashboardWorkouts';
+  var TARGET_STORAGE_KEY = 'fitnessDashboardCalorieTarget';
+  var CALORIE_TARGET = 2000;
+  var PROTEIN_TARGET = 100;
+  var STEPS_TARGET = 10000;
+
+  var METRICS = [
+    { key: 'weight',   label: 'Weight',   unit: 'kg',   decimals: 1 },
+    { key: 'calories', label: 'Calories', unit: 'kcal', decimals: 0 },
+    { key: 'protein',  label: 'Protein',  unit: 'g',    decimals: 0 },
+    { key: 'steps',    label: 'Steps',    unit: '',     decimals: 0 }
+  ];
+
+  var WORKOUTS = [
+    { key: 'leg',   label: 'Leg Day',   sub: 'Squats \u00b7 Lunges \u00b7 Leg Press', color: 'var(--clay)',  img: 'https://images.unsplash.com/photo-1675026482808-33f7515ecddd?w=500&h=600&fit=crop&auto=format', alt: 'A woman using a leg press machine in a bright gym, photo by Nate Johnston on Unsplash' },
+    { key: 'chest', label: 'Chest Day', sub: 'Bench Press \u00b7 Flys \u00b7 Push-ups', color: 'var(--amber)', img: 'https://images.unsplash.com/photo-1554284126-aa88f22d8b74?w=500&h=600&fit=crop&auto=format', alt: 'People lifting barbells in a bright gym, photo by Sven Mieke on Unsplash' },
+    { key: 'back',  label: 'Back Day',  sub: 'Rows \u00b7 Pull-ups \u00b7 Deadlifts', color: 'var(--blue)',  img: 'https://images.unsplash.com/photo-1598575435247-2572be03bf6d?w=500&h=600&fit=crop&auto=format', alt: 'A man working out his back in a gym, photo by Gordon Cowie on Unsplash' },
+    { key: 'walk',  label: 'Walking',   sub: 'Steady Pace \u00b7 Outdoors',          color: 'var(--walk)',  img: 'https://images.unsplash.com/photo-1477332552946-cfb384aeaf1c?w=500&h=600&fit=crop&auto=format', alt: 'A woman walking on a pathway during daytime, photo by Emma Simpson on Unsplash' },
+    { key: 'cycle', label: 'Cycling',   sub: 'Endurance \u00b7 Road or Indoor',       color: 'var(--cycle)', img: 'https://images.unsplash.com/photo-1656906630579-ba8238942926?w=500&h=600&fit=crop&auto=format', alt: 'A person riding a bicycle, photo by Honbike on Unsplash' }
+  ];
+
+  var entries = {};
+  var workouts = {}; // { '2026-06-24': { leg: true, chest: false, back: true } }
+
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function fmtDateShort(s) {
+    var d = new Date(s + 'T00:00:00');
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+  function fmtDateLong(s) {
+    var d = new Date(s + 'T00:00:00');
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function loadWorkouts() {
+    try {
+      var raw = localStorage.getItem(WORKOUT_STORAGE_KEY);
+      workouts = raw ? JSON.parse(raw) : {};
+    } catch (e) { workouts = {}; }
+  }
+  async function saveWorkouts() {
+
+try {
+
+await fetch(
+"https://script.google.com/macros/s/AKfycbzPabD_-u5nZslq5z7S6xVgpYuvRpv2moxJOugRqLHAbhg3GTrwwFet_jLePMqiRmNV/exec",
+{
+method:"POST",
+
+body:JSON.stringify({
+
+entries,
+workouts,
+calorieTarget:CALORIE_TARGET
+
+})
+
+}
+);
+
+return true;
+
+}
+catch(e){
+
+console.log(e);
+
+return false;
+
+}
+
+}
+
+  function loadCalorieTarget() {
+    try {
+      var raw = localStorage.getItem(TARGET_STORAGE_KEY);
+      if (raw && !isNaN(parseInt(raw, 10))) CALORIE_TARGET = parseInt(raw, 10);
+    } catch (e) { /* keep default */ }
+  }
+  function saveCalorieTarget() {
+    try { localStorage.setItem(TARGET_STORAGE_KEY, String(CALORIE_TARGET)); return true; }
+    catch (e) { return false; }
+  }
+
+  async function loadEntries(){
+
+try{
+
+const res=
+await fetch(
+"https://script.google.com/macros/s/AKfycbzPabD_-u5nZslq5z7S6xVgpYuvRpv2moxJOugRqLHAbhg3GTrwwFet_jLePMqiRmNV/exec"
+);
+
+const data=
+await res.json();
+
+entries=
+data.entries||{};
+
+workouts=
+data.workouts||{};
+
+CALORIE_TARGET=
+data.calorieTarget||2000;
+
+}
+catch(err){
+
+entries={};
+
+}
+
+}
+  async function saveEntries(){
+
+try{
+
+await fetch(
+"https://script.google.com/macros/s/AKfycbzPabD_-u5nZslq5z7S6xVgpYuvRpv2moxJOugRqLHAbhg3GTrwwFet_jLePMqiRmNV/exec",
+{
+
+method:"POST",
+
+body:
+JSON.stringify({
+
+entries,
+workouts,
+
+calorieTarget:
+CALORIE_TARGET
+
+})
+
+}
+
+);
+
+return true;
+
+}
+catch{
+
+return false;
+
+}
+
+}
+  function sortedDates() { return Object.keys(entries).sort(); }
+
+  function formatVal(metric, v) {
+    if (metric.decimals === 0) return Math.round(v).toLocaleString();
+    return (Math.round(v * 10) / 10).toString();
+  }
+
+  // ---------- Header date ----------
+  (function initHeaderDate() {
+    var d = new Date();
+    document.getElementById('navDayNum').textContent = d.getDate();
+    document.getElementById('navDow').textContent = d.toLocaleDateString(undefined, { weekday: 'short' }) + ',';
+    document.getElementById('navMonth').textContent = d.toLocaleDateString(undefined, { month: 'long' });
+  })();
+
+  document.getElementById('scrollToLogBtn').addEventListener('click', function () {
+    document.getElementById('quickLog').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    fieldEl('weight').focus();
+  });
+
+  // ---------- Form ----------
+
+  var dateInput = document.getElementById('dateInput');
+  var saveBtn = document.getElementById('saveBtn');
+  var saveMsg = document.getElementById('saveMsg');
+
+  dateInput.max = todayStr();
+  dateInput.value = todayStr();
+
+  function fieldEl(key) { return document.getElementById('input-' + key); }
+
+  var mealSelect = document.getElementById('mealSelect');
+
+  function recomputeDayTotals(dateStr) {
+    var e = entries[dateStr];
+    if (!e) return;
+    var meals = e.meals || {};
+    var totalCal = 0, totalProt = 0;
+    Object.keys(meals).forEach(function (mk) {
+      totalCal += meals[mk].calories || 0;
+      totalProt += meals[mk].protein || 0;
+    });
+    if (Object.keys(meals).length > 0) {
+      e.calories = totalCal;
+      e.protein = totalProt;
+    } else {
+      delete e.calories;
+      delete e.protein;
+    }
+  }
+
+  function populateForm(dateStr) {
+    var e = entries[dateStr] || {};
+    fieldEl('weight').value = (typeof e.weight === 'number') ? e.weight : '';
+    fieldEl('steps').value = (typeof e.steps === 'number') ? e.steps : '';
+    // Calories/protein inputs reflect the currently selected meal's saved amount, not the day total
+    populateMealFields(dateStr, mealSelect.value);
+    renderMealBreakdown(dateStr);
+  }
+
+  function populateMealFields(dateStr, mealKey) {
+    var e = entries[dateStr] || {};
+    var meal = (e.meals && e.meals[mealKey]) || {};
+    fieldEl('calories').value = (typeof meal.calories === 'number') ? meal.calories : '';
+    fieldEl('protein').value = (typeof meal.protein === 'number') ? meal.protein : '';
+  }
+
+  function renderMealBreakdown(dateStr) {
+    var e = entries[dateStr] || {};
+    var meals = e.meals || {};
+    var order = ['breakfast', 'lunch', 'dinner', 'snack'];
+    var rows = order
+      .filter(function (mk) { return meals[mk] && (meals[mk].calories || meals[mk].protein); })
+      .map(function (mk) {
+        var m = meals[mk];
+        return '<div class="meal-breakdown-row"><span class="meal-name">' + mk + '</span><span>' +
+          (m.calories ? m.calories + ' kcal' : '—') + (m.protein ? ' · ' + m.protein + 'g protein' : '') +
+          '</span></div>';
+      });
+    var wrap = document.getElementById('mealBreakdown');
+    if (rows.length === 0) {
+      wrap.innerHTML = '<p class="meal-breakdown-empty">No meals logged yet for this day.</p>';
+    } else {
+      var totalCal = e.calories || 0;
+      var totalProt = e.protein || 0;
+      wrap.innerHTML = rows.join('') +
+        '<div class="meal-breakdown-row" style="border-top:1.5px solid var(--ink); margin-top:4px; padding-top:6px;"><span class="meal-name">Day total</span><span>' + totalCal + ' kcal · ' + totalProt + 'g protein</span></div>';
+    }
+  }
+
+  dateInput.addEventListener('change', function () {
+    populateForm(dateInput.value);
+    saveMsg.textContent = '';
+  });
+
+  mealSelect.addEventListener('change', function () {
+    populateMealFields(dateInput.value, mealSelect.value);
+  });
+
+  saveBtn.addEventListener('click', function () {
+    var dateStr = dateInput.value;
+    if (!dateStr) { saveMsg.textContent = 'Pick a date first.'; return; }
+
+    var mealKey = mealSelect.value;
+    var weightRaw = fieldEl('weight').value;
+    var stepsRaw = fieldEl('steps').value;
+    var calRaw = fieldEl('calories').value;
+    var protRaw = fieldEl('protein').value;
+
+    var any = false;
+    if (!entries[dateStr]) entries[dateStr] = {};
+    var e = entries[dateStr];
+
+    if (weightRaw !== '' && !isNaN(parseFloat(weightRaw))) { e.weight = parseFloat(weightRaw); any = true; }
+    if (stepsRaw !== '' && !isNaN(parseFloat(stepsRaw))) { e.steps = parseFloat(stepsRaw); any = true; }
+
+    if (calRaw !== '' && !isNaN(parseFloat(calRaw)) || protRaw !== '' && !isNaN(parseFloat(protRaw))) {
+      if (!e.meals) e.meals = {};
+      if (!e.meals[mealKey]) e.meals[mealKey] = {};
+      if (calRaw !== '' && !isNaN(parseFloat(calRaw))) { e.meals[mealKey].calories = parseFloat(calRaw); any = true; }
+      if (protRaw !== '' && !isNaN(parseFloat(protRaw))) { e.meals[mealKey].protein = parseFloat(protRaw); any = true; }
+      recomputeDayTotals(dateStr);
+    }
+
+    if (!any) { saveMsg.textContent = 'Enter at least one value.'; return; }
+    if (Object.keys(e).length === 0) delete entries[dateStr];
+
+    var ok = saveEntries();
+    saveMsg.textContent = ok ? 'Saved ✓' : 'Could not save.';
+    renderMealBreakdown(dateStr);
+    renderAll();
+    setTimeout(function () { saveMsg.textContent = ''; }, 2000);
+  });
+
+  // ---------- Today's summary (col 1) ----------
+
+  function renderSummary() {
+    var today = entries[todayStr()] || {};
+    var consumed = today.calories || 0;
+    var target = CALORIE_TARGET;
+    var net = target - consumed;
+
+    document.getElementById('sumConsumed').textContent = consumed.toLocaleString();
+    document.getElementById('sumTarget').textContent = target.toLocaleString();
+    document.getElementById('sumNet').textContent = Math.max(0, net).toLocaleString();
+
+    var pct = Math.min(1, consumed / target);
+    var circumference = 2 * Math.PI * 40;
+    document.getElementById('calRingArc').setAttribute('stroke-dasharray', (pct * circumference) + ' ' + circumference);
+
+    var proteinPct = Math.min(100, ((today.protein || 0) / PROTEIN_TARGET) * 100);
+    var stepsPct = Math.min(100, ((today.steps || 0) / STEPS_TARGET) * 100);
+
+    document.getElementById('barProtein').style.width = proteinPct + '%';
+    document.getElementById('valProtein').textContent = (today.protein || 0) + 'g';
+    document.getElementById('barSteps').style.width = stepsPct + '%';
+    document.getElementById('valSteps').textContent = (today.steps || 0).toLocaleString();
+
+    var dates = sortedDates();
+    var weightPoints = dates.map(function (d) { return entries[d].weight; }).filter(function (v) { return typeof v === 'number'; });
+    if (weightPoints.length) {
+      var latestW = weightPoints[weightPoints.length - 1];
+      var firstW = weightPoints[0];
+      var rangeW = Math.max(1, Math.abs(latestW - firstW) * 3);
+      var wPct = 50;
+      document.getElementById('barWeight').style.width = wPct + '%';
+      document.getElementById('valWeight').textContent = latestW + ' kg';
+    } else {
+      document.getElementById('barWeight').style.width = '0%';
+      document.getElementById('valWeight').textContent = '—';
+    }
+
+    var note = document.getElementById('aiNote');
+    if (!dates.length) {
+      note.textContent = "Log your first entry below to start tracking your daily summary.";
+    } else if (consumed === 0) {
+      note.textContent = "No calories logged for today yet. Add an entry to see your progress toward " + target.toLocaleString() + " kcal.";
+    } else if (consumed <= target) {
+      note.textContent = "You're on track for your calorie goal today. Keep it up!";
+    } else {
+      note.textContent = "You've gone " + (consumed - target).toLocaleString() + " kcal over your target today.";
+    }
+  }
+
+  // ---------- Streak (col 2) ----------
+
+  function getLoggedDateSet() {
+    return new Set(sortedDates());
+  }
+
+  function renderStreak() {
+    var loggedDates = getLoggedDateSet();
+    var today = new Date();
+    today.setHours(0,0,0,0);
+
+    // current streak: consecutive days ending today (or yesterday if today not logged yet)
+    function dStr(d) {
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+
+    var current = 0;
+    var cursor = new Date(today);
+    if (!loggedDates.has(dStr(cursor))) {
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    while (loggedDates.has(dStr(cursor))) {
+      current++;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+
+    // longest streak overall
+    var allDates = sortedDates();
+    var longest = 0, run = 0, prevDate = null;
+    allDates.forEach(function (d) {
+      if (prevDate) {
+        var prev = new Date(prevDate + 'T00:00:00');
+        var cur = new Date(d + 'T00:00:00');
+        var diffDays = Math.round((cur - prev) / 86400000);
+        run = (diffDays === 1) ? run + 1 : 1;
+      } else {
+        run = 1;
+      }
+      longest = Math.max(longest, run);
+      prevDate = d;
+    });
+
+    document.getElementById('streakNum').textContent = current;
+    document.getElementById('streakSub').textContent = current === 1 ? 'day streak!' : 'day streak this week!';
+    document.getElementById('longestStreak').textContent = longest;
+
+    // week dots: Mon..Sun of current week
+    var dowNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    var weekStart = new Date(today);
+    var jsDay = weekStart.getDay(); // 0=Sun
+    var offset = (jsDay === 0) ? 6 : jsDay - 1;
+    weekStart.setDate(weekStart.getDate() - offset);
+
+    var dotsHtml = '';
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(weekStart);
+      d.setDate(d.getDate() + i);
+      d.setHours(0,0,0,0);
+      var key = dStr(d);
+      var cls = 'future';
+      var icon = '';
+      if (d < today) {
+        cls = loggedDates.has(key) ? 'done' : 'missed';
+        icon = loggedDates.has(key) ? '✓' : '✕';
+      } else if (d.getTime() === today.getTime()) {
+        cls = loggedDates.has(key) ? 'done' : 'future';
+        icon = loggedDates.has(key) ? '✓' : '';
+      }
+      dotsHtml += '<div class="week-dot-col"><span class="dow">' + dowNames[i] + '</span><div class="week-dot ' + cls + '">' + icon + '</div></div>';
+    }
+    document.getElementById('weekDots').innerHTML = dotsHtml;
+  }
+
+  // ---------- Protein intake summary (col 2) ----------
+
+  function renderProteinSummary() {
+    var dates = sortedDates();
+    var today = entries[todayStr()] || {};
+    var todayProtein = today.protein || 0;
+    document.getElementById('proteinToday').textContent = Math.round(todayProtein) + 'g';
+
+    var last7 = dates.slice(-7).map(function (d) { return entries[d].protein; }).filter(function (v) { return typeof v === 'number'; });
+    var avg = last7.length ? Math.round(last7.reduce(function (a, v) { return a + v; }, 0) / last7.length) : 0;
+    document.getElementById('proteinAvg').textContent = avg + 'g';
+
+    // last 7 calendar days (not just last 7 entries) for the bar chart, Mon-aligned-ish: just chronological
+    var today0 = new Date(); today0.setHours(0,0,0,0);
+    var days = [];
+    for (var i = 6; i >= 0; i--) {
+      var d = new Date(today0);
+      d.setDate(d.getDate() - i);
+      var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      days.push({ key: key, dow: d.toLocaleDateString(undefined, { weekday: 'narrow' }), value: (entries[key] && entries[key].protein) || 0 });
+    }
+    var maxVal = Math.max(PROTEIN_TARGET, days.reduce(function (m, d) { return Math.max(m, d.value); }, 0));
+
+    var html = days.map(function (d) {
+      var h = d.value > 0 ? Math.max(4, Math.round((d.value / maxVal) * 100)) : 2;
+      return '<div class="protein-bar-col"><div class="protein-bar" style="height:' + h + '%"></div><span class="protein-bar-dow">' + d.dow + '</span></div>';
+    }).join('');
+    document.getElementById('proteinBars').innerHTML = html;
+
+    var note = document.getElementById('proteinNote');
+    if (!dates.length) {
+      note.textContent = 'Log protein to see your weekly pattern.';
+    } else if (todayProtein === 0) {
+      note.textContent = 'No protein logged yet today.';
+    } else if (todayProtein >= PROTEIN_TARGET) {
+      note.textContent = "Great work — you've hit your " + PROTEIN_TARGET + "g protein goal today.";
+    } else {
+      note.textContent = (PROTEIN_TARGET - Math.round(todayProtein)) + 'g to go to reach your ' + PROTEIN_TARGET + 'g goal today.';
+    }
+  }
+
+  // ---------- All-time step record (col 4) ----------
+
+  function renderStepRecord() {
+    var dates = sortedDates();
+    var best = null;
+    dates.forEach(function (d) {
+      var v = entries[d].steps;
+      if (typeof v === 'number' && (!best || v > best.value)) best = { date: d, value: v };
+    });
+    if (best) {
+      document.getElementById('stepRecordValue').textContent = best.value.toLocaleString();
+      document.getElementById('stepRecordDate').textContent = fmtDateLong(best.date);
+    } else {
+      document.getElementById('stepRecordValue').textContent = '—';
+      document.getElementById('stepRecordDate').textContent = 'Log your steps to set a record.';
+    }
+  }
+
+
+  var currentRange = 'all';
+  document.getElementById('rangeToggle').addEventListener('click', function (e) {
+    var btn = e.target.closest('.range-btn');
+    if (!btn) return;
+    currentRange = btn.getAttribute('data-range');
+    Array.prototype.forEach.call(document.querySelectorAll('.range-btn'), function (b) { b.classList.toggle('active', b === btn); });
+    renderWeightChart();
+  });
+
+  function getWeightPoints(range) {
+    var dates = sortedDates();
+    var all = dates.map(function (d) { return { date: d, value: entries[d] && entries[d].weight }; })
+      .filter(function (p) { return typeof p.value === 'number'; });
+    if (range === 'all') return all;
+    var n = parseInt(range, 10);
+    if (all.length <= n) return all;
+    var cutoff = new Date(all[all.length - 1].date + 'T00:00:00');
+    cutoff.setDate(cutoff.getDate() - n);
+    var cutoffStr = cutoff.getFullYear() + '-' + String(cutoff.getMonth()+1).padStart(2,'0') + '-' + String(cutoff.getDate()).padStart(2,'0');
+    return all.filter(function (p) { return p.date >= cutoffStr; });
+  }
+
+  function renderWeightStats(points) {
+    var row = document.getElementById('weightStatsRow');
+    if (points.length === 0) { row.innerHTML = ''; return; }
+    var first = points[0], last = points[points.length - 1];
+    var change = last.value - first.value;
+    var sign = change > 0 ? '+' : '';
+    var color = change > 0 ? 'var(--amber)' : (change < 0 ? 'var(--green)' : 'var(--ink-dim)');
+    row.innerHTML =
+      '<div class="weight-stat"><span class="weight-stat-label">Start</span><span class="weight-stat-value">' + formatVal(METRICS[0], first.value) + '</span></div>' +
+      '<div class="weight-stat"><span class="weight-stat-label">Current</span><span class="weight-stat-value">' + formatVal(METRICS[0], last.value) + '</span></div>' +
+      '<div class="weight-stat"><span class="weight-stat-label">Change</span><span class="weight-stat-value" style="color:' + color + '">' + sign + formatVal(METRICS[0], change) + '</span></div>';
+  }
+
+  function buildWeightChartSVG(points) {
+    var w = 460, h = 180, padX = 30, padY = 22;
+    if (points.length === 0) return '<p class="empty-note">No weight entries yet — log one to see your chart.</p>';
+    if (points.length === 1) return '<p class="empty-note">One entry logged. Add another day to see a trend.</p>';
+
+    var values = points.map(function (p) { return p.value; });
+    var rawMin = Math.min.apply(null, values), rawMax = Math.max.apply(null, values);
+    var pad = Math.max(0.5, (rawMax - rawMin) * 0.18);
+    var min = rawMin - pad, max = rawMax + pad, range = max - min;
+
+    function x(i) { return padX + (i / (points.length - 1)) * (w - padX * 2); }
+    function y(v) { return h - padY - ((v - min) / range) * (h - padY * 2); }
+
+    var gridLines = '', gridLabels = '';
+    for (var g = 0; g <= 3; g++) {
+      var gv = min + (range * g / 3);
+      var gy = y(gv);
+      gridLines += '<line x1="' + padX + '" y1="' + gy.toFixed(1) + '" x2="' + (w - padX) + '" y2="' + gy.toFixed(1) + '" stroke="#EFEFE9" stroke-width="1" />';
+      gridLabels += '<text x="' + (padX - 6) + '" y="' + (gy + 3).toFixed(1) + '" font-size="9" text-anchor="end" fill="#9aa19c">' + gv.toFixed(1) + '</text>';
+    }
+
+    var linePath = points.map(function (p, i) { return (i === 0 ? 'M ' : 'L ') + x(i).toFixed(1) + ' ' + y(p.value).toFixed(1); }).join(' ');
+    var areaPath = linePath + ' L ' + x(points.length - 1).toFixed(1) + ' ' + (h - padY) + ' L ' + x(0).toFixed(1) + ' ' + (h - padY) + ' Z';
+
+    var showEvery = Math.max(1, Math.ceil(points.length / 6));
+    var circles = '', labels = '';
+    points.forEach(function (p, i) {
+      var isLast = i === points.length - 1;
+      circles += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(p.value).toFixed(1) + '" r="' + (isLast ? 4 : 2.5) + '" fill="' + (isLast ? '#1F4D3C' : '#fff') + '" stroke="#1F4D3C" stroke-width="1.5" />';
+      if (i % showEvery === 0 || isLast) {
+        labels += '<text x="' + x(i).toFixed(1) + '" y="' + (h - 4) + '" font-size="9" text-anchor="middle" fill="#9aa19c">' + fmtDateShort(p.date) + '</text>';
+      }
+    });
+
+    return '<svg viewBox="0 0 ' + w + ' ' + h + '" class="weight-chart-svg" preserveAspectRatio="none">' +
+      '<defs><linearGradient id="gradW" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1F4D3C" stop-opacity="0.18"/><stop offset="100%" stop-color="#1F4D3C" stop-opacity="0"/></linearGradient></defs>' +
+      gridLines + gridLabels +
+      '<path d="' + areaPath + '" fill="url(#gradW)" stroke="none" />' +
+      '<path d="' + linePath + '" fill="none" stroke="#1F4D3C" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />' +
+      circles + labels + '</svg>';
+  }
+
+  function renderWeightChart() {
+    var points = getWeightPoints(currentRange);
+    renderWeightStats(points);
+    document.getElementById('weightChartWrap').innerHTML = buildWeightChartSVG(points);
+  }
+
+  // ---------- Nutrition goal (col 3 bottom) ----------
+
+  function renderNutritionGoal() {
+    var today = entries[todayStr()] || {};
+    var consumed = today.calories || 0;
+    var pct = Math.min(100, Math.round((consumed / CALORIE_TARGET) * 100));
+    document.getElementById('goalCalText').textContent = CALORIE_TARGET.toLocaleString() + ' calorie';
+    document.getElementById('goalPct').textContent = pct + '%';
+    document.getElementById('goalFill').style.width = pct + '%';
+
+    Array.prototype.forEach.call(document.querySelectorAll('.goal-target-btn'), function (btn) {
+      btn.classList.toggle('active', parseInt(btn.getAttribute('data-target'), 10) === CALORIE_TARGET);
+    });
+
+    var loggedDates = getLoggedDateSet();
+    var dowNames = ['M','T','W','T','F','S','S'];
+    var today0 = new Date(); today0.setHours(0,0,0,0);
+    var weekStart = new Date(today0);
+    var jsDay = weekStart.getDay();
+    var offset = (jsDay === 0) ? 6 : jsDay - 1;
+    weekStart.setDate(weekStart.getDate() - offset);
+
+    var html = '';
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(weekStart); d.setDate(d.getDate() + i); d.setHours(0,0,0,0);
+      var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      var cls = 'empty', icon = '';
+      if (entries[key] && typeof entries[key].calories === 'number') {
+        if (entries[key].calories <= CALORIE_TARGET) { cls = 'good'; icon = '✓'; }
+        else { cls = 'over'; icon = '✕'; }
+      }
+      html += '<div class="day-check-col"><span class="dow">' + dowNames[i] + '</span><div class="day-check ' + cls + '">' + icon + '</div></div>';
+    }
+    document.getElementById('dayCheckRow').innerHTML = html;
+  }
+
+  document.getElementById('goalTargetRow').addEventListener('click', function (e) {
+    var btn = e.target.closest('.goal-target-btn');
+    if (!btn) return;
+    CALORIE_TARGET = parseInt(btn.getAttribute('data-target'), 10);
+    saveCalorieTarget();
+    renderAll();
+  });
+
+
+  // ---------- Schedule (placeholder, illustrative) ----------
+  // Featured workout card and community feed are illustrative examples, not tied to logged data.
+
+  // ---------- History table ----------
+
+  function renderHistory() {
+    var dates = sortedDates().slice().reverse();
+    var wrap = document.getElementById('historyTableWrap');
+    if (dates.length === 0) { wrap.innerHTML = '<p class="empty-note">No entries yet.</p>'; return; }
+
+    var rows = dates.map(function (d) {
+      var e = entries[d];
+      function cell(key, decimals) {
+        var v = e[key];
+        if (typeof v !== 'number') return '<span style="color:var(--ink-dim)">—</span>';
+        return decimals === 0 ? Math.round(v).toLocaleString() : (Math.round(v * 10) / 10);
+      }
+      return '<tr><td>' + fmtDateLong(d) + '</td><td>' + cell('weight',1) + '</td><td>' + cell('calories',0) + '</td><td>' + cell('protein',0) + '</td><td>' + cell('steps',0) + '</td><td><button class="row-del-btn" data-date="' + d + '">Delete</button></td></tr>';
+    }).join('');
+
+    wrap.innerHTML = '<table class="history"><thead><tr><th>Date</th><th>Weight (kg)</th><th>Calories</th><th>Protein (g)</th><th>Steps</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+
+    Array.prototype.forEach.call(wrap.querySelectorAll('.row-del-btn'), function (btn) {
+      btn.addEventListener('click', function () {
+        var d = btn.getAttribute('data-date');
+        delete entries[d];
+        saveEntries();
+        if (dateInput.value === d) populateForm(d);
+        renderAll();
+      });
+    });
+  }
+
+  function renderEntryCount() {
+    var n = sortedDates().length;
+    document.getElementById('entryCount').textContent = n + ' ' + (n === 1 ? 'entry' : 'entries');
+  }
+
+  // ---------- Workout cards (Leg / Chest / Back) ----------
+
+  async function toggleWorkout(key, dateStr) {
+
+  if (!workouts[dateStr]) {
+    workouts[dateStr] = {};
+  }
+
+  workouts[dateStr][key] =
+    !workouts[dateStr][key];
+
+  if (!workouts[dateStr][key]) {
+
+    var anyLeft =
+      WORKOUTS.some(function (w) {
+        return workouts[dateStr][w.key];
+      });
+
+    if (!anyLeft) {
+      delete workouts[dateStr];
+    }
+
+  }
+
+  /* update UI immediately */
+  renderWorkoutCards();
+  renderCalendar();
+
+  /* save after UI updates */
+  await saveWorkouts();
+
+}
+
+
+
+function renderWorkoutCards() {
+
+  var today = todayStr();
+
+  var todayWorkouts =
+    workouts[today] || {};
+
+  var html =
+    WORKOUTS.map(function (w) {
+
+      var isDone =
+        !!todayWorkouts[w.key];
+
+      return '' +
+        '<div class="workout-card">' +
+          '<div class="workout-card-photo">' +
+            '<img src="' + w.img + '" alt="' + w.alt + '" loading="lazy" onerror="this.style.display=\'none\'">' +
+          '</div>' +
+
+          '<div class="workout-card-body">' +
+
+            '<p class="workout-name">' +
+            w.label +
+            '</p>' +
+
+            '<p class="workout-sub">' +
+            w.sub +
+            '</p>' +
+
+            '<button class="workout-done-btn ' +
+            (isDone ? 'done' : '') +
+            '" data-workout="' +
+            w.key +
+            '">' +
+
+            (isDone
+              ? '✓ Done today'
+              : 'Mark as done')
+
+            +
+
+            '</button>' +
+
+          '</div>' +
+
+        '</div>';
+
+    }).join('');
+
+
+
+  document.getElementById(
+    'workoutsRow'
+  ).innerHTML = html;
+
+
+
+  document
+    .querySelectorAll(
+      '.workout-done-btn'
+    )
+    .forEach(function (btn) {
+
+      btn.addEventListener(
+        'click',
+
+        async function () {
+
+          await toggleWorkout(
+            btn.dataset.workout,
+            today
+          );
+
+        }
+
+      );
+
+    });
+
+}
+
+  // ---------- Workout calendar ----------
+
+  var calViewDate = new Date(); // controls which month is shown
+  calViewDate.setDate(1);
+
+  document.getElementById('calPrevBtn').addEventListener('click', function () {
+    calViewDate.setMonth(calViewDate.getMonth() - 1);
+    renderCalendar();
+  });
+  document.getElementById('calNextBtn').addEventListener('click', function () {
+    calViewDate.setMonth(calViewDate.getMonth() + 1);
+    renderCalendar();
+  });
+
+  function renderCalendar() {
+    var year = calViewDate.getFullYear();
+    var month = calViewDate.getMonth();
+    var todayKey = todayStr();
+
+    document.getElementById('calMonthLabel').textContent = calViewDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
+    var firstOfMonth = new Date(year, month, 1);
+    var startOffset = (firstOfMonth.getDay() === 0) ? 6 : firstOfMonth.getDay() - 1; // Monday-first
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    var dowLabels = ['M','T','W','T','F','S','S'];
+    var html = dowLabels.map(function (d) { return '<div class="cal-dow">' + d + '</div>'; }).join('');
+
+    for (var i = 0; i < startOffset; i++) {
+      html += '<div class="cal-cell empty"></div>';
+    }
+
+    for (var day = 1; day <= daysInMonth; day++) {
+      var key = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+      var isToday = (key === todayKey);
+      var w = workouts[key] || {};
+      var dots = WORKOUTS.filter(function (wk) { return w[wk.key]; })
+        .map(function (wk) { return '<span class="cal-dot" style="background:' + wk.color + '"></span>'; })
+        .join('');
+
+      html += '<div class="cal-cell ' + (isToday ? 'today' : '') + '">' +
+        '<span class="daynum-sm">' + day + '</span>' +
+        (dots ? '<div class="cal-dots">' + dots + '</div>' : '') +
+        '</div>';
+    }
+
+    document.getElementById('calGrid').innerHTML = html;
+  }
+
+  function renderAll() {
+    renderEntryCount();
+    renderSummary();
+    renderStreak();
+    renderProteinSummary();
+    renderWeightChart();
+    renderNutritionGoal();
+    renderHistory();
+    renderWorkoutCards();
+    renderCalendar();
+    renderStepRecord();
+  }
+
+  // ---------- Init ----------
+  (async()=>{
+
+await loadEntries();
+
+renderAll();
+
+})();
+  loadWorkouts();
+  loadCalorieTarget();
+  populateForm(dateInput.value);
+  renderAll();
+
+})();
+</script>
+
+</body>
+</html>
