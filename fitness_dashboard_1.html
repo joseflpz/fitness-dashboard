@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fitness &amp; Health Dashboard</title>
 <style>
-  :root {
+    :root {
     --bg: #F1F1ED;
     --card: #FFFFFF;
     --ink: #1B2420;
@@ -19,6 +19,7 @@
     --clay: #D9714E;
     --blue: #5C7C99;
     --red: #D85C4C;
+    --core: #90d84c;
     --walk: #7A9471;
     --cycle: #8A6FB0;
     --radius: 18px;
@@ -407,6 +408,43 @@
   .step-record-value { font-size: 30px; font-weight: 800; margin: 0; line-height: 1; }
   .step-record-date { font-size: 12px; color: var(--ink-dim); margin: 4px 0 0 0; }
 
+  .step-top3 {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    text-align: left;
+  }
+  .step-top3-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 8px 0;
+  }
+  .step-top3-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12.5px;
+    padding: 5px 0;
+  }
+  .step-top3-rank {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--green-soft);
+    color: var(--green);
+    font-size: 10.5px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-right: 8px;
+  }
+  .step-top3-info { display: flex; align-items: center; flex: 1; min-width: 0; }
+  .step-top3-date { color: var(--ink-dim); flex: 1; text-align: left; }
+  .step-top3-val { font-weight: 700; text-align: right; flex-shrink: 0; }
+  .step-top3-empty { font-size: 11.5px; color: var(--ink-dim); text-align: center; }
+
   /* featured workout image card */
   .feature-card {
     border-radius: var(--radius);
@@ -573,6 +611,12 @@
   table.history tr:last-child td { border-bottom: none; }
   .row-del-btn { background: none; border: none; color: var(--ink-dim); cursor: pointer; font-size: 11.5px; text-decoration: underline; font-family: var(--font-body); }
   .row-del-btn:hover { color: var(--red); }
+  .history-workout-check {
+    width: 17px; height: 17px;
+    accent-color: var(--green);
+    cursor: pointer;
+  }
+  .history-workout-check:disabled { cursor: default; opacity: 0.85; }
 
   .empty-note { font-size: 12.5px; color: var(--ink-dim); font-style: italic; padding: 12px 0; }
 
@@ -610,8 +654,8 @@
   .workouts-section { margin-bottom: 18px; }
   .workouts-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 14px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
     align-items: stretch;
   }
   @media (max-width: 1100px) {
@@ -632,7 +676,7 @@
   .workout-card-photo {
     position: relative;
     width: 100%;
-    height: 110px;
+    height: 90px;
     background: var(--green-soft);
     overflow: hidden;
     flex-shrink: 0;
@@ -643,13 +687,13 @@
     object-fit: cover;
   }
   .workout-card-body {
-    padding: 12px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     flex: 1;
   }
-  .workout-name { font-size: 14px; font-weight: 800; margin: 0 0 3px 0; color: var(--ink); }
-  .workout-sub { font-size: 10.5px; color: var(--ink-dim); margin: 0 0 10px 0; line-height: 1.4; flex: 1; }
+  .workout-name { font-size: 12.5px; font-weight: 800; margin: 0 0 2px 0; color: var(--ink); }
+  .workout-sub { font-size: 9.5px; color: var(--ink-dim); margin: 0 0 8px 0; line-height: 1.35; flex: 1; }
   .workout-done-btn {
     display: flex;
     align-items: center;
@@ -660,12 +704,13 @@
     background: var(--bg);
     color: var(--ink);
     border-radius: 999px;
-    padding: 8px 10px;
-    font-size: 11.5px;
+    padding: 7px 6px;
+    font-size: 10px;
     font-weight: 700;
     cursor: pointer;
     font-family: var(--font-body);
     flex-shrink: 0;
+    white-space: nowrap;
   }
   .workout-done-btn:hover { background: var(--green-soft); }
   .workout-done-btn.done {
@@ -726,8 +771,19 @@
     background: var(--bg);
     color: var(--ink-dim);
   }
+  .clickable-cal-cell {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.clickable-cal-cell:hover {
+  background-color: var(--light-gray, #f4f4f0); /* Or any subtle highlight color your theme uses */
+}
+/* Styling for the actively selected calendar day */
+.clickable-cal-cell.selected {
+  border: 2px solid var(--ink, #185a42) !important; /* Forces a crisp border using your theme color */
+  background-color: var(--light-green-tint, #eef5f2); /* Optional: slight background tint to make it pop */
+}
   .cal-cell.empty { background: transparent; }
-  .cal-cell.today { box-shadow: inset 0 0 0 1.5px var(--ink); }
   .cal-cell .daynum-sm { font-weight: 600; }
   .cal-dots { display: flex; gap: 2px; margin-top: 2px; }
   .cal-dot { width: 4.5px; height: 4.5px; border-radius: 50%; }
@@ -743,6 +799,7 @@
   }
   .cal-legend-item { display: flex; align-items: center; gap: 5px; }
   .cal-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
 </style>
 </head>
 <body>
@@ -761,9 +818,9 @@
       Search here
     </div>
     <div class="navprofile">
-      <div class="navprofile-avatar">YOU</div>
+      <div class="navprofile-avatar">AL</div>
       <div class="navprofile-text">
-        <div class="name">Your Log</div>
+        <div class="name">Allan's Daily Log</div>
         <div class="role">Self-tracked</div>
       </div>
     </div>
@@ -772,7 +829,7 @@
   <!-- Greeting row -->
   <div class="greeting-row">
     <div class="greeting-left">
-      <h1>Hey, Allan, ready to log today?</h1>
+      <h1>Hey Allan, ready to log today's activities?</h1>
       <p id="greetingSub">Track your weight, calories, protein, and steps below.</p>
     </div>
     <div class="greeting-right">
@@ -881,7 +938,7 @@
       <div class="week-dots" id="weekDots"></div>
       <p class="streak-stat-label">Longest Streak</p>
       <p class="streak-stat" id="longestStreak">0</p>
-      <p class="macro-note">Streak counts consecutive days you've logged at least one metric.</p>
+      <p class="macro-note">Streak counts consecutive days with at least 10,000 steps.</p>
     </div>
 
     <!-- ROW 1, COLUMN 3: weight progress chart -->
@@ -907,11 +964,13 @@
       </div>
       <div class="cal-grid" id="calGrid"></div>
       <div class="cal-legend">
+        <div class="cal-legend-item"><span class="cal-legend-dot" style="background:var(--core)"></span>Core</div>
         <div class="cal-legend-item"><span class="cal-legend-dot" style="background:var(--clay)"></span>Leg</div>
         <div class="cal-legend-item"><span class="cal-legend-dot" style="background:var(--amber)"></span>Chest</div>
         <div class="cal-legend-item"><span class="cal-legend-dot" style="background:var(--blue)"></span>Back</div>
         <div class="cal-legend-item"><span class="cal-legend-dot" style="background:var(--walk)"></span>Walk</div>
         <div class="cal-legend-item"><span class="cal-legend-dot" style="background:var(--cycle)"></span>Cycle</div>
+        <div class="cal-legend-item"><span class="cal-legend-dot" style="background:var(--bright-green)"></span>Workout</div>
       </div>
     </div>
 
@@ -959,10 +1018,11 @@
     <div class="card step-record-card">
       <p class="card-label" style="text-align:left;">All-Time Step Record</p>
       <div class="step-record-photo">
-        <img src="https://images.unsplash.com/photo-1578269174936-2709b6aeb913?w=500&h=300&fit=crop&auto=format" alt="A gold trophy, photo by Giorgio Trovato on Unsplash" loading="lazy" onerror="this.style.display='none'">
+        <img src="https://images.unsplash.com/photo-1477332552946-cfb384aeaf1c?w=500&h=300&fit=crop&auto=format" alt="A woman walking on a pathway during daytime, photo by Emma Simpson on Unsplash" loading="lazy" onerror="this.style.display='none'">
       </div>
       <p class="step-record-value" id="stepRecordValue">—</p>
       <p class="step-record-date" id="stepRecordDate">Log your steps to set a record.</p>
+      <div class="step-top3" id="stepTop3"></div>
     </div>
 
   </div>
@@ -977,9 +1037,8 @@
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-
+  
 (function () {
   'use strict';
 
@@ -998,6 +1057,7 @@
   ];
 
   var WORKOUTS = [
+    { key: 'core',  label: 'Core Day',  sub: 'Plank \u00b7 Crunches \u00b7 Russian Twists', color: 'var(--core)',  img: 'https://images.unsplash.com/photo-1765302741884-e846c7a178df?w=500&h=600&fit=crop&auto=format', alt: 'A man doing a plank exercise in a gym, photo by Anastase Maragos on Unsplash' },
     { key: 'leg',   label: 'Leg Day',   sub: 'Squats \u00b7 Lunges \u00b7 Leg Press', color: 'var(--clay)',  img: 'https://images.unsplash.com/photo-1675026482808-33f7515ecddd?w=500&h=600&fit=crop&auto=format', alt: 'A woman using a leg press machine in a bright gym, photo by Nate Johnston on Unsplash' },
     { key: 'chest', label: 'Chest Day', sub: 'Bench Press \u00b7 Flys \u00b7 Push-ups', color: 'var(--amber)', img: 'https://images.unsplash.com/photo-1554284126-aa88f22d8b74?w=500&h=600&fit=crop&auto=format', alt: 'People lifting barbells in a bright gym, photo by Sven Mieke on Unsplash' },
     { key: 'back',  label: 'Back Day',  sub: 'Rows \u00b7 Pull-ups \u00b7 Deadlifts', color: 'var(--blue)',  img: 'https://images.unsplash.com/photo-1598575435247-2572be03bf6d?w=500&h=600&fit=crop&auto=format', alt: 'A man working out his back in a gym, photo by Gordon Cowie on Unsplash' },
@@ -1330,40 +1390,46 @@ return false;
     var today = new Date();
     today.setHours(0,0,0,0);
 
-    // current streak: consecutive days ending today (or yesterday if today not logged yet)
-    function dStr(d) {
-      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-    }
+// Current streak = consecutive days with 10,000+ steps
+var current = 0;
+var cursor = new Date(today);
 
-    var current = 0;
-    var cursor = new Date(today);
-    if (!loggedDates.has(dStr(cursor))) {
-      cursor.setDate(cursor.getDate() - 1);
-    }
-    while (loggedDates.has(dStr(cursor))) {
-      current++;
-      cursor.setDate(cursor.getDate() - 1);
-    }
+function dStr(d) {
+  return d.getFullYear() + '-' +
+    String(d.getMonth() + 1).padStart(2, '0') + '-' +
+    String(d.getDate()).padStart(2, '0');
+}
 
-    // longest streak overall
-    var allDates = sortedDates();
-    var longest = 0, run = 0, prevDate = null;
-    allDates.forEach(function (d) {
-      if (prevDate) {
-        var prev = new Date(prevDate + 'T00:00:00');
-        var cur = new Date(d + 'T00:00:00');
-        var diffDays = Math.round((cur - prev) / 86400000);
-        run = (diffDays === 1) ? run + 1 : 1;
-      } else {
-        run = 1;
-      }
-      longest = Math.max(longest, run);
-      prevDate = d;
-    });
+while (true) {
+  var key = dStr(cursor);
+  var entry = entries[key];
 
-    document.getElementById('streakNum').textContent = current;
-    document.getElementById('streakSub').textContent = current === 1 ? 'day streak!' : 'day streak this week!';
-    document.getElementById('longestStreak').textContent = longest;
+  if (entry && (entry.steps || 0) >= 10000) {
+    current++;
+    cursor.setDate(cursor.getDate() - 1);
+  } else {
+    break;
+  }
+}
+
+// Longest streak of 10k+ step days
+var longest = 0;
+var run = 0;
+
+sortedDates().forEach(function(date) {
+  var entry = entries[date];
+
+  if ((entry.steps || 0) >= 10000) {
+    run++;
+    longest = Math.max(longest, run);
+  } else {
+    run = 0;
+  }
+});
+
+document.getElementById('streakNum').textContent = current;
+document.getElementById('streakSub').textContent = 'days over 10k steps';
+document.getElementById('longestStreak').textContent = longest;
 
     // week dots: Mon..Sun of current week
     var dowNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
@@ -1381,11 +1447,15 @@ return false;
       var cls = 'future';
       var icon = '';
       if (d < today) {
-        cls = loggedDates.has(key) ? 'done' : 'missed';
-        icon = loggedDates.has(key) ? '✓' : '✕';
+var reachedGoal = entries[key] && (entries[key].steps || 0) >= 10000;
+
+cls = reachedGoal ? 'done' : 'missed';
+icon = reachedGoal ? '✓' : '✕';
       } else if (d.getTime() === today.getTime()) {
-        cls = loggedDates.has(key) ? 'done' : 'future';
-        icon = loggedDates.has(key) ? '✓' : '';
+var reachedGoal = entries[key] && (entries[key].steps || 0) >= 10000;
+
+cls = reachedGoal ? 'done' : 'future';
+icon = reachedGoal ? '✓' : '';
       }
       dotsHtml += '<div class="week-dot-col"><span class="dow">' + dowNames[i] + '</span><div class="week-dot ' + cls + '">' + icon + '</div></div>';
     }
@@ -1437,11 +1507,14 @@ return false;
 
   function renderStepRecord() {
     var dates = sortedDates();
-    var best = null;
+    var ranked = [];
     dates.forEach(function (d) {
       var v = entries[d].steps;
-      if (typeof v === 'number' && (!best || v > best.value)) best = { date: d, value: v };
+      if (typeof v === 'number') ranked.push({ date: d, value: v });
     });
+    ranked.sort(function (a, b) { return b.value - a.value; });
+
+    var best = ranked[0] || null;
     if (best) {
       document.getElementById('stepRecordValue').textContent = best.value.toLocaleString();
       document.getElementById('stepRecordDate').textContent = fmtDateLong(best.date);
@@ -1449,6 +1522,23 @@ return false;
       document.getElementById('stepRecordValue').textContent = '—';
       document.getElementById('stepRecordDate').textContent = 'Log your steps to set a record.';
     }
+
+    var top3 = ranked.slice(0, 3);
+    var top3Html = '<p class="step-top3-title">Top 3 Step Counts</p>';
+    if (top3.length === 0) {
+      top3Html += '<p class="step-top3-empty">No step entries yet.</p>';
+    } else {
+      top3Html += top3.map(function (entry, i) {
+        return '<div class="step-top3-row">' +
+          '<div class="step-top3-info">' +
+            '<span class="step-top3-rank">' + (i + 1) + '</span>' +
+            '<span class="step-top3-date">' + fmtDateShort(entry.date) + '</span>' +
+          '</div>' +
+          '<span class="step-top3-val">' + entry.value.toLocaleString() + '</span>' +
+        '</div>';
+      }).join('');
+    }
+    document.getElementById('stepTop3').innerHTML = top3Html;
   }
 
 
@@ -1597,10 +1687,31 @@ return false;
         if (typeof v !== 'number') return '<span style="color:var(--ink-dim)">—</span>';
         return decimals === 0 ? Math.round(v).toLocaleString() : (Math.round(v * 10) / 10);
       }
-      return '<tr><td>' + fmtDateLong(d) + '</td><td>' + cell('weight',1) + '</td><td>' + cell('calories',0) + '</td><td>' + cell('protein',0) + '</td><td>' + cell('steps',0) + '</td><td><button class="row-del-btn" data-date="' + d + '">Delete</button></td></tr>';
+      var dayWorkouts = workouts[d] || {};
+      var hasAnyWorkout = WORKOUTS.some(function (w) { return dayWorkouts[w.key]; });
+      var isChecked = hasAnyWorkout || !!dayWorkouts.manual;
+      var workoutCell = '<input type="checkbox" class="history-workout-check" data-date="' + d + '" ' + (isChecked ? 'checked' : '') + (hasAnyWorkout ? ' disabled title="Auto-checked from a logged workout"' : '') + '>';
+      return '<tr><td>' + fmtDateLong(d) + '</td><td>' + cell('weight',1) + '</td><td>' + cell('calories',0) + '</td><td>' + cell('protein',0) + '</td><td>' + cell('steps',0) + '</td><td>' + workoutCell + '</td><td><button class="row-del-btn" data-date="' + d + '">Delete</button></td></tr>';
     }).join('');
 
-    wrap.innerHTML = '<table class="history"><thead><tr><th>Date</th><th>Weight (kg)</th><th>Calories</th><th>Protein (g)</th><th>Steps</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+    wrap.innerHTML = '<table class="history"><thead><tr><th>Date</th><th>Weight (kg)</th><th>Calories</th><th>Protein (g)</th><th>Steps</th><th>Workout</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+
+    Array.prototype.forEach.call(wrap.querySelectorAll('.history-workout-check'), function (chk) {
+      chk.addEventListener('change', async function () {
+        var d = chk.getAttribute('data-date');
+        if (!workouts[d]) workouts[d] = {};
+        if (chk.checked) {
+          workouts[d].manual = true;
+        } else {
+          delete workouts[d].manual;
+          var anyLeft = WORKOUTS.some(function (w) { return workouts[d][w.key]; });
+          if (!anyLeft) delete workouts[d];
+        }
+        await saveWorkouts();
+        renderCalendar();
+        if (d === todayStr()) renderWorkoutCards();
+      });
+    });
 
     Array.prototype.forEach.call(wrap.querySelectorAll('.row-del-btn'), function (btn) {
       btn.addEventListener('click', function () {
@@ -1621,118 +1732,65 @@ return false;
   // ---------- Workout cards (Leg / Chest / Back) ----------
 
   async function toggleWorkout(key, dateStr) {
-
-  if (!workouts[dateStr]) {
-    workouts[dateStr] = {};
-  }
-
-  workouts[dateStr][key] =
-    !workouts[dateStr][key];
-
-  if (!workouts[dateStr][key]) {
-
-    var anyLeft =
-      WORKOUTS.some(function (w) {
-        return workouts[dateStr][w.key];
-      });
-
-    if (!anyLeft) {
-      delete workouts[dateStr];
+    if (!workouts[dateStr]) {
+      workouts[dateStr] = {};
     }
 
+    workouts[dateStr][key] = !workouts[dateStr][key];
+
+    if (!workouts[dateStr][key]) {
+      var anyLeft = WORKOUTS.some(function (w) {
+        return workouts[dateStr][w.key];
+      });
+      if (!anyLeft) {
+        delete workouts[dateStr];
+      }
+    }
+
+    /* Update UI immediately for the active date */
+    renderWorkoutCardsForDate(dateStr);
+    renderCalendar();
+
+    /* Save after UI updates */
+    await saveWorkouts();
   }
 
-  /* update UI immediately */
-  renderWorkoutCards();
-  renderCalendar();
+  // New flexible rendering function
+  function renderWorkoutCardsForDate(dateStr) {
+    var targetWorkouts = workouts[dateStr] || {};
 
-  /* save after UI updates */
-  await saveWorkouts();
-
-}
-
-
-
-function renderWorkoutCards() {
-
-  var today = todayStr();
-
-  var todayWorkouts =
-    workouts[today] || {};
-
-  var html =
-    WORKOUTS.map(function (w) {
-
-      var isDone =
-        !!todayWorkouts[w.key];
+    var html = WORKOUTS.map(function (w) {
+      var isDone = !!targetWorkouts[w.key];
 
       return '' +
         '<div class="workout-card">' +
           '<div class="workout-card-photo">' +
             '<img src="' + w.img + '" alt="' + w.alt + '" loading="lazy" onerror="this.style.display=\'none\'">' +
           '</div>' +
-
           '<div class="workout-card-body">' +
-
-            '<p class="workout-name">' +
-            w.label +
-            '</p>' +
-
-            '<p class="workout-sub">' +
-            w.sub +
-            '</p>' +
-
-            '<button class="workout-done-btn ' +
-            (isDone ? 'done' : '') +
-            '" data-workout="' +
-            w.key +
-            '">' +
-
-            (isDone
-              ? '✓ Done today'
-              : 'Mark as done')
-
-            +
-
+            '<p class="workout-name">' + w.label + '</p>' +
+            '<p class="workout-sub">' + w.sub + '</p>' +
+            '<button class="workout-done-btn ' + (isDone ? 'done' : '') + '" data-workout="' + w.key + '">' +
+              (isDone ? '✓ Done on ' + fmtDateShort(dateStr) : 'Mark as done') +
             '</button>' +
-
           '</div>' +
-
         '</div>';
-
     }).join('');
 
+    document.getElementById('workoutsRow').innerHTML = html;
 
-
-  document.getElementById(
-    'workoutsRow'
-  ).innerHTML = html;
-
-
-
-  document
-    .querySelectorAll(
-      '.workout-done-btn'
-    )
-    .forEach(function (btn) {
-
-      btn.addEventListener(
-        'click',
-
-        async function () {
-
-          await toggleWorkout(
-            btn.dataset.workout,
-            today
-          );
-
-        }
-
-      );
-
+    document.querySelectorAll('.workout-done-btn').forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        await toggleWorkout(btn.dataset.workout, dateStr);
+      });
     });
+  }
 
-}
+  // Keep the original name mapping to the current input date so renderAll() doesn't break
+  function renderWorkoutCards() {
+    var dateInput = document.getElementById('dateInput');
+    renderWorkoutCardsForDate(dateInput ? dateInput.value : todayStr());
+  }
 
   // ---------- Workout calendar ----------
 
@@ -1746,6 +1804,39 @@ function renderWorkoutCards() {
   document.getElementById('calNextBtn').addEventListener('click', function () {
     calViewDate.setMonth(calViewDate.getMonth() + 1);
     renderCalendar();
+  });
+
+  // Clicking a calendar day updates the active form date and syncs the UI
+  document.getElementById('calGrid').addEventListener('click', function (e) {
+    var cell = e.target.closest('.clickable-cal-cell');
+    if (!cell) return;
+
+    var selectedDate = cell.getAttribute('data-date');
+    
+    // --- NEW: Handle selection borders ---
+    // Remove the selected class from any previously selected cell
+    var currentlySelected = document.querySelector('.clickable-cal-cell.selected');
+    if (currentlySelected) {
+      currentlySelected.classList.remove('selected');
+    }
+    // Add the selected class to the clicked cell
+    cell.classList.add('selected');
+    // -------------------------------------
+
+    // 1. Update the date selector value
+    var dateInput = document.getElementById('dateInput');
+    dateInput.value = selectedDate;
+    
+    // 2. Clear any lingering save messages
+    var saveMsg = document.getElementById('saveMsg');
+    if (saveMsg) saveMsg.textContent = '';
+    
+    // 3. Update the logs, workout cards, and summaries for this selected date
+    populateForm(selectedDate);
+    renderWorkoutCardsForDate(selectedDate);
+    
+    // Optional: Smooth scroll up to the logs/cards section so you can edit immediately
+    document.getElementById('quickLog').scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
 
   function renderCalendar() {
@@ -1766,15 +1857,19 @@ function renderWorkoutCards() {
       html += '<div class="cal-cell empty"></div>';
     }
 
+    var currentInputDate = document.getElementById('dateInput').value; // Get active date
+
     for (var day = 1; day <= daysInMonth; day++) {
       var key = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
       var isToday = (key === todayKey);
+      var isSelected = (key === currentInputDate); // Check if this cell is the active date
       var w = workouts[key] || {};
       var dots = WORKOUTS.filter(function (wk) { return w[wk.key]; })
         .map(function (wk) { return '<span class="cal-dot" style="background:' + wk.color + '"></span>'; })
         .join('');
 
-      html += '<div class="cal-cell ' + (isToday ? 'today' : '') + '">' +
+      // Added 'selected' class dynamically if match is found
+      html += '<div class="cal-cell clickable-cal-cell ' + (isToday ? 'today' : '') + ' ' + (isSelected ? 'selected' : '') + '" data-date="' + key + '">' +
         '<span class="daynum-sm">' + day + '</span>' +
         (dots ? '<div class="cal-dots">' + dots + '</div>' : '') +
         '</div>';
@@ -1796,20 +1891,27 @@ function renderWorkoutCards() {
     renderStepRecord();
   }
 
-  // ---------- Init ----------
-  (async()=>{
+// ---------- Init ----------
+  async function initializeDashboard() {
+    // 1. Establish basic local states first
+    loadWorkouts();
+    loadCalorieTarget();
+    
+    // 2. Wait completely for the live server data to download
+    await loadEntries();
+    
+    // 3. Force the form inputs (Weight, Steps, etc.) to read the newly downloaded server data
+    populateForm(dateInput.value);
+    
+    // 4. Draw all summary blocks, charts, calendars, and streaks on the screen
+    renderAll();
+  }
 
-await loadEntries();
-
-renderAll();
+  // Run the sequence perfectly on refresh
+  initializeDashboard();
 
 })();
-  loadWorkouts();
-  loadCalorieTarget();
-  populateForm(dateInput.value);
-  renderAll();
 
-})();
 </script>
 
 </body>
