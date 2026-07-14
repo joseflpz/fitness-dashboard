@@ -1081,44 +1081,126 @@
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   }
 
+
   function loadWorkouts() {
     try {
       var raw = localStorage.getItem(WORKOUT_STORAGE_KEY);
       workouts = raw ? JSON.parse(raw) : {};
-    } catch (e) { workouts = {}; }
+    } catch (e) {
+      workouts = {};
+    }
   }
-  async function saveWorkouts() {
 
-try {
+  function cacheLocalState() {
+    try {
+      localStorage.setItem('fitnessDashboardEntriesCache', JSON.stringify(entries));
+      localStorage.setItem('fitnessDashboardWorkoutsCache', JSON.stringify(workouts));
+      localStorage.setItem('fitnessDashboardTargetCache', String(CALORIE_TARGET));
+    } catch (e) {
+      // Ignore localStorage failures
+    }
+  }
 
-await fetch(
-"https://script.google.com/macros/s/AKfycbzPabD_-u5nZslq5z7S6xVgpYuvRpv2moxJOugRqLHAbhg3GTrwwFet_jLePMqiRmNV/exec",
-{
-method:"POST",
+  function loadLocalStateFallback() {
+    try {
+      var eRaw = localStorage.getItem('fitnessDashboardEntriesCache');
+      var wRaw = localStorage.getItem('fitnessDashboardWorkoutsCache');
+      var tRaw = localStorage.getItem('fitnessDashboardTargetCache');
 
-body:JSON.stringify({
+      if (eRaw) entries = JSON.parse(eRaw) || {};
+      if (wRaw) workouts = JSON.parse(wRaw) || {};
+      if (tRaw && !isNaN(parseInt(tRaw, 10))) CALORIE_TARGET = parseInt(tRaw, 10);
+    } catch (err) {
+      // Keep whatever is already in memory
+    }
+  }
 
-entries,
-workouts,
-calorieTarget:CALORIE_TARGET
+  var API_URL = 'https://script.google.com/macros/s/AKfycbzPabD_-u5nZslq5z7S6xVgpYuvRpv2moxJOugRqLHAbhg3GTrwwFet_jLePMqiRmNV/exec';
 
-})
+  async function apiRequest(payload) {
+    var res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  }
 
-}
-);
+  async function loadEntries() {
+    try {
+      var res = await fetch(API_URL + '?action=loadAll&_=' + Date.now(), { cache: 'no-store' });
+      var data = await res.json();
+      data = data.data || data;
+      entries = data.entries || {};
+      workouts = data.workouts || {};
+      CALORIE_TARGET = data.calorieTarget || 2000;
+      cacheLocalState();
+    } catch (err) {
+      loadLocalStateFallback();
+    }
+  }
 
-return true;
+  async function saveEntry(dateStr) {
+    try {
+      if (!dateStr) return false;
+      var result = await apiRequest({
+        action: 'saveEntry',
+        date: dateStr,
+        entry: entries[dateStr] || {}
+      });
+      var data = result.data || result;
+      if (data.entries) entries = data.entries;
+      if (data.workouts) workouts = data.workouts;
+      if (typeof data.calorieTarget !== 'undefined') CALORIE_TARGET = data.calorieTarget;
+      cacheLocalState();
+      return result && result.ok !== false;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
 
-}
-catch(e){
+  async function deleteEntry(dateStr) {
+    try {
+      if (!dateStr) return false;
+      await apiRequest({
+        action: 'deleteEntry',
+        date: dateStr
+      });
+      cacheLocalState();
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
 
-console.log(e);
+  async function saveWorkout(dateStr) {
+    try {
+      if (!dateStr) return false;
+      var result = await apiRequest({
+        action: 'saveWorkout',
+        date: dateStr,
+        workout: workouts[dateStr] || {}
+      });
+      var data = result.data || result;
+      if (data.entries) entries = data.entries;
+      if (data.workouts) workouts = data.workouts;
+      if (typeof data.calorieTarget !== 'undefined') CALORIE_TARGET = data.calorieTarget;
+      cacheLocalState();
+      return result && result.ok !== false;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
 
-return false;
+  async function saveWorkouts(dateStr) {
+    return saveWorkout(dateStr || dateInput.value);
+  }
 
-}
-
-}
+  async function saveEntries(dateStr) {
+    return saveEntry(dateStr || dateInput.value);
+  }
 
   function loadCalorieTarget() {
     try {
@@ -1126,75 +1208,25 @@ return false;
       if (raw && !isNaN(parseInt(raw, 10))) CALORIE_TARGET = parseInt(raw, 10);
     } catch (e) { /* keep default */ }
   }
-  function saveCalorieTarget() {
-    try { localStorage.setItem(TARGET_STORAGE_KEY, String(CALORIE_TARGET)); return true; }
-    catch (e) { return false; }
+
+  async function saveCalorieTarget() {
+    try {
+      var result = await apiRequest({
+        action: 'saveTarget',
+        calorieTarget: CALORIE_TARGET
+      });
+      localStorage.setItem(TARGET_STORAGE_KEY, String(CALORIE_TARGET));
+      var data = result.data || result;
+      if (data.entries) entries = data.entries;
+      if (data.workouts) workouts = data.workouts;
+      cacheLocalState();
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
   }
 
-  async function loadEntries(){
-
-try{
-
-const res=
-await fetch(
-"https://script.google.com/macros/s/AKfycbzPabD_-u5nZslq5z7S6xVgpYuvRpv2moxJOugRqLHAbhg3GTrwwFet_jLePMqiRmNV/exec"
-);
-
-const data=
-await res.json();
-
-entries=
-data.entries||{};
-
-workouts=
-data.workouts||{};
-
-CALORIE_TARGET=
-data.calorieTarget||2000;
-
-}
-catch(err){
-
-entries={};
-
-}
-
-}
-  async function saveEntries(){
-
-try{
-
-await fetch(
-"https://script.google.com/macros/s/AKfycbzPabD_-u5nZslq5z7S6xVgpYuvRpv2moxJOugRqLHAbhg3GTrwwFet_jLePMqiRmNV/exec",
-{
-
-method:"POST",
-
-body:
-JSON.stringify({
-
-entries,
-workouts,
-
-calorieTarget:
-CALORIE_TARGET
-
-})
-
-}
-
-);
-
-return true;
-
-}
-catch{
-
-return false;
-
-}
-
-}
   function sortedDates() { return Object.keys(entries).sort(); }
 
   function formatVal(metric, v) {
@@ -1227,6 +1259,26 @@ return false;
   function fieldEl(key) { return document.getElementById('input-' + key); }
 
   var mealSelect = document.getElementById('mealSelect');
+
+  function setSaveButtonState(isSaving, ok) {
+    if (isSaving) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+      saveMsg.style.color = 'var(--ink-dim)';
+      saveMsg.textContent = 'Saving...';
+      return;
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save entry';
+    if (ok === true) {
+      saveMsg.style.color = 'var(--green)';
+      saveMsg.textContent = 'Saved ✓';
+    } else if (ok === false) {
+      saveMsg.style.color = 'var(--red)';
+      saveMsg.textContent = 'Could not save.';
+    }
+  }
 
   function recomputeDayTotals(dateStr) {
     var e = entries[dateStr];
@@ -1294,7 +1346,7 @@ return false;
     populateMealFields(dateInput.value, mealSelect.value);
   });
 
-  saveBtn.addEventListener('click', function () {
+  saveBtn.addEventListener('click', async function () {
     var dateStr = dateInput.value;
     if (!dateStr) { saveMsg.textContent = 'Pick a date first.'; return; }
 
@@ -1311,7 +1363,7 @@ return false;
     if (weightRaw !== '' && !isNaN(parseFloat(weightRaw))) { e.weight = parseFloat(weightRaw); any = true; }
     if (stepsRaw !== '' && !isNaN(parseFloat(stepsRaw))) { e.steps = parseFloat(stepsRaw); any = true; }
 
-    if (calRaw !== '' && !isNaN(parseFloat(calRaw)) || protRaw !== '' && !isNaN(parseFloat(protRaw))) {
+    if ((calRaw !== '' && !isNaN(parseFloat(calRaw))) || (protRaw !== '' && !isNaN(parseFloat(protRaw)))) {
       if (!e.meals) e.meals = {};
       if (!e.meals[mealKey]) e.meals[mealKey] = {};
       if (calRaw !== '' && !isNaN(parseFloat(calRaw))) { e.meals[mealKey].calories = parseFloat(calRaw); any = true; }
@@ -1322,11 +1374,15 @@ return false;
     if (!any) { saveMsg.textContent = 'Enter at least one value.'; return; }
     if (Object.keys(e).length === 0) delete entries[dateStr];
 
-    var ok = saveEntries();
-    saveMsg.textContent = ok ? 'Saved ✓' : 'Could not save.';
+    setSaveButtonState(true);
     renderMealBreakdown(dateStr);
     renderAll();
-    setTimeout(function () { saveMsg.textContent = ''; }, 2000);
+
+    var ok = await saveEntry(dateStr);
+    setSaveButtonState(false, ok);
+    renderMealBreakdown(dateStr);
+    renderAll();
+    setTimeout(function () { saveMsg.textContent = ''; }, 1500);
   });
 
   // ---------- Today's summary (col 1) ----------
@@ -1707,17 +1763,17 @@ icon = reachedGoal ? '✓' : '';
           var anyLeft = WORKOUTS.some(function (w) { return workouts[d][w.key]; });
           if (!anyLeft) delete workouts[d];
         }
-        await saveWorkouts();
+        await saveWorkout(d);
         renderCalendar();
         if (d === todayStr()) renderWorkoutCards();
       });
     });
 
     Array.prototype.forEach.call(wrap.querySelectorAll('.row-del-btn'), function (btn) {
-      btn.addEventListener('click', function () {
+      btn.addEventListener('click', async function () {
         var d = btn.getAttribute('data-date');
         delete entries[d];
-        saveEntries();
+        await deleteEntry(d);
         if (dateInput.value === d) populateForm(d);
         renderAll();
       });
@@ -1752,7 +1808,7 @@ icon = reachedGoal ? '✓' : '';
     renderCalendar();
 
     /* Save after UI updates */
-    await saveWorkouts();
+    await saveWorkout(dateStr);
   }
 
   // New flexible rendering function
